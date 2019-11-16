@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState, useCallback } from 'react';
-import {motion} from 'framer-motion';
+import {motion, useAnimation} from 'framer-motion';
 import {useDeviceMotion} from './hooks/useDeviceMotion';
 import {useNetworkStatus} from './hooks/useNetworkStatus';
 import QuietHelper from './QuietHelper';
@@ -11,8 +11,7 @@ export default function App() {
   const list = useAnimation();
   useEffect(() => {
     list.start(i => ({
-      x: 100,
-      opacity: 0,
+      opacity: 1,
       transition: {delay: i * 0.3}
     }))
   })
@@ -40,7 +39,7 @@ export default function App() {
       <a onClick={sendMessage}>send message</a>
       <ul id="content">
         {messages.map((message, indx) => (
-          <motion.li animate={list} custom={indx+1} key={indx}>{message}</motion.li>
+          <motion.li animate={list} drag={true} custom={indx+1} key={indx}>{message}</motion.li>
         ))}
       </ul>
       <h1>{isOnline ? "Online" : "Offline"}</h1>
