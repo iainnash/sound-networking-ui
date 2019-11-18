@@ -23,8 +23,8 @@ export const useDeviceMotion = () => {
   });
 
   React.useEffect(() => {
-    const lastMotions = [];
-    const lastShaken = null;
+    let lastMotions = [];
+    let lastShaken = null;
     const handle = (deviceMotionEvent) => {
       if (deviceMotionEvent.interval < 200) {
         lastMotions.push(deviceMotionEvent.acceleration.x)
@@ -32,9 +32,7 @@ export const useDeviceMotion = () => {
         lastMotions = [];
       }
       if (lastMotions.length > 3) {
-        //if (lastMotions.reduce((m, l) => {m += l}, 0) > 2) {
-          lastShaken = new Date.getTime();
-        //}
+        lastShaken = new Date().getTime();
         lastMotions = [];
       }
       deviceMotionEvent.lastShaken = lastShaken;

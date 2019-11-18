@@ -6,37 +6,37 @@ export default class QuietHelper {
     this.qi = null;
     this.tx = null;
     this.subscribers = [];
+    this.transmitQueue = 0;
     this.listening = false;
+  }
+  setup() {
     quiet.addReadyCallback(() => {
-      alert('ready')
       this.qi = quiet;
       this.tx = quiet.transmitter({
         profile: 'audible',
         onFinish: () => {
-          if (!this.listening) {
-            this.subscribeListener();
-          }
-          alert('sent')
+          this.transmitQueue -= 1;
         },
       });
-      setTimeout(() => {
-        this.unlockAudio();
-      }, 1000);
+      this.subscribeListener();
     });
   }
-  unlockAudio() {
-    this.tx.transmit(quiet.str2ab('hall world'));
+  isTransmitting() {
+    return this.transmitQueue !== 0;
+  }
+  transmit(message) {
+    this.tx.transmit(quiet.str2ab(message));
+    this.transmitQueue += 1;
   }
   subscribeListener() {
     this.listening = true;
-    alert('subscribing')
     quiet.receiver({
       profile: 'audible',
       onReceive: (rawMessage) => {
         const newMessage = quiet.ab2str(rawMessage);
         this.subscribers.forEach((subscriber) => {
           subscriber(newMessage);
-        })
+        });
       }
     })
   }
@@ -44,11 +44,8 @@ export default class QuietHelper {
     this.subscribers.push(fn);
   }
   unsubscribeToNewMessage(fn) {
-    this.subscribers = this.subscribers.filter((subscriber) => subscriber !== fn);
-  }
-  send(message) {
-    if (this.tx) {
-      this.tx.transmit(quiet.str2ab("foooo bar"));
-    }
+    this.subscribers = this.subscribers.filter(
+      (subscriber) => subscriber !== fn
+    );
   }
 }

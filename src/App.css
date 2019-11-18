@@ -1,3 +1,9 @@
 .shaken {
   background: red;
 }
+
+body {
+  margin: 3em;
+  text-align: center;
+  font-size: 0.9em;
+}
